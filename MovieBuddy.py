@@ -68,7 +68,12 @@ def search_movie():
                  print("Invalid input, choose again")
                  
 def popular_releases():
-        response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
+    
+        try:
+            response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
+        except ConnectionError:
+            print("Please check your connection to the server. You will be returned to main menu")
+            main_menu()
         outcome = [] #Empty list to put filtered and parsed results in json format
         place = 0 #a way to number the list, as the values in API doesn't contain it - every next movie has following number, capping at 10
         for movie in response:
@@ -124,7 +129,12 @@ def find_a_movie():
     while True:
              #since the random movie finder in API doesn't contain any information 
              #another request has to be made using ID gathered in first request
-             response = requests.get(f"https://api.simkl.com/search/random?type=movie&genre={movie_types[movietype]}&rank_limit=500&client_id={api}").json()
+
+             try:
+                response = requests.get(f"https://api.simkl.com/search/random?type=movie&genre={movie_types[movietype]}&rank_limit=500&client_id={api}").json()
+             except ConnectionError:
+                print("Please check your connection to the server. You will be returned to main menu")
+                main_menu()    
              movie_id = response["simkl_id"]   
              moviedetailsresponse = requests.get(f"https://api.simkl.com/movies/{movie_id}?extended=full&client_id={api}").json()
              title = moviedetailsresponse["title"]
