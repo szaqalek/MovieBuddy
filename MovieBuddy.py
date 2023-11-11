@@ -8,6 +8,12 @@ import random
 import env
 
 api = env.API_KEY
+
+def main():
+    if api == "enter_key_here":
+        sys.exit("You haven't entered your API key in the env.py file. Please read README for more")
+    main_menu()  
+        
 def main_menu():
     print(Figlet().renderText("MovieBuddy")) #logo at start
     print("\nHow can I help you? ")
@@ -175,7 +181,7 @@ def find_a_movie():
                       continue
     
 if __name__ == "__main__":
-    main_menu()
+    main()
 
 
     
