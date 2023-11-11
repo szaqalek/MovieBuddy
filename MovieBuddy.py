@@ -14,7 +14,7 @@ def main_menu():
     print("\nHow can I help you? ")
     print("1. Let me search movies by name")
     print("2. I don't know what to watch! Help me find a random movie from top 500")
-    print("3. What's popular in theatres right now?")
+    print("3. Upcoming movie releases")
     print("0. Exit\n")
     
     while True:
@@ -61,21 +61,21 @@ def search_movie():
                  print("Invalid input, choose again")
                  
 def popular_releases():
-        response = requests.get(f"https://api.simkl.com/movies/trending/?extended=overview,theater,metadata,tmdb,genres&release=2023&limit=10&client_id={api}").json()
+        response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
         outcome = [] #a blank table containg values from APi in json
         place = 0 #a way to number the list, as the values in API doesn't contain it - every next movie has following number, capping at 10
         for movie in response:
-           if place == 10:
+           if place == 50:
                break
            place += 1
            title = movie["title"]
            release = movie["release_date"]
-           IMDBrating = movie["ratings"]["imdb"]["rating"] if "ratings" in movie and movie["ratings"]["imdb"]["rating"] is not None else "N/A" 
-           outcome.append([place, title, release, IMDBrating]) #checking if the corresponding values does exist and are not empty, and appending them to table
-        print(tabulate(outcome, headers=["Place", "Title","Relase date", "IMDB rating"])) 
+           IMDBrating = movie["ratings"]["imdb"]["rating"] if "ratings" in movie and "imdb" in movie["ratings"] and movie["ratings"]["imdb"]["rating"] is not None else "N/A"
+           outcome.append([place, title, release]) #checking if the corresponding values does exist and are not empty, and appending them to table
+        print(tabulate(outcome, headers=["Place", "Title","Relase date",])) 
            
         while True:
-              choice = input("\nEnter 1 to return to main menu, or 0 to exit\n")
+              choice = input("\nEnter 1 to return to main menu, or 0 to exit3\n")
          
               if choice == '1':
                  main_menu()
