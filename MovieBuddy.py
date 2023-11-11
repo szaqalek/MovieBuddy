@@ -22,12 +22,13 @@ def main_menu():
     
          if choice == '1':
             search_movie()
+         elif choice == "2":
+             find_a_movie() 
+        elif choice == "3":
+             popular_releases()  
          elif choice == "0":
              sys.exit()
-         elif choice == "3":
-             popular_releases()  
-         elif choice == "2":
-             find_a_movie()      
+         
          else:
              print("Invalid input, choose again")
     
