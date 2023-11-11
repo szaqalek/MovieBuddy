@@ -20,22 +20,26 @@ def main_menu():
     while True:
          choice = input() 
     
-         if choice == '1':
-            search_movie()
+         if choice == '0':
+            sys.exit()
+         elif choice == "1":
+             search_movie()
          elif choice == "2":
-             find_a_movie() 
-        elif choice == "3":
-             popular_releases()  
-         elif choice == "0":
-             sys.exit()
-         
+             find_a_movie()  
+         elif choice == "3":
+             popular_releases()     
          else:
              print("Invalid input, choose again")
     
 def search_movie():
+    
         moviename = input("Enter movie name:\n")
-        response = requests.get(f"https://api.simkl.com/search/movie?q={moviename}&page=1&limit=20&extended=full&client_id={api}").json()
-        outcome = [] #a blank table containg values from APi in json
+        try:
+            response = requests.get(f"https://api.simkl.com/search/movie?q={moviename}&page=1&limit=20&extended=overview,theater,metadata,tmdb,genres&client_id={api}").json()
+        except ConnectionError:
+            print("Please check your connection to the server. You will be returned to main menu")
+            main_menu()
+        outcome = [] #Empty list to put filtered and parsed results in json format
     
         for movie in response: 
            title = movie["title"] 
@@ -50,20 +54,19 @@ def search_movie():
     
         while True:
              choice = input("\nEnter 1 to search again, 2 to return to main menu, or 0 to exit\n")
-        
-             if choice == '2':
-                main_menu()
+             
+             if choice == '0':
+                sys.exit()
              elif choice == "1":
                 search_movie()
-             elif choice == "0":
-                sys.exit()
-        
+             elif choice == '2':
+                main_menu()
              else:
                  print("Invalid input, choose again")
                  
 def popular_releases():
         response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
-        outcome = [] #a blank table containg values from APi in json
+        outcome = [] #Empty list to put filtered and parsed results in json format
         place = 0 #a way to number the list, as the values in API doesn't contain it - every next movie has following number, capping at 10
         for movie in response:
            if place == 50:
@@ -78,10 +81,10 @@ def popular_releases():
         while True:
               choice = input("\nEnter 1 to return to main menu, or 0 to exit3\n")
          
-              if choice == '1':
-                 main_menu()
-              elif choice == "0":
-                 sys.exit()
+              if choice == '0':
+                sys.exit()
+              elif choice == '1':
+                main_menu()
               else:
                   print("Invalid input, choose again")
     
@@ -137,25 +140,23 @@ def find_a_movie():
              print(f"Overview: {overview}")
              print("Genres:", ", ".join(genres)) #as the genres from APi is in list form, to have it in pretty format, join function is used
      
-             
-             
              while True: 
                   choice = input("\nEnter 1 to search again, 2 to return to choose another genre, 3 to return to main menu or 0 to exit\n")
-             
-                  if choice == '3':
-                     main_menu()
-                  elif choice == "2":
-                     find_a_movie()
-                  elif choice == "0":
+                  if choice == '0':
                      sys.exit()
                   elif choice == "1":
-                      break
+                       break
+                  elif choice == "2":
+                      find_a_movie()  
+                  elif choice == "3":
+                      main_menu()
+                      
                   else:
                       print("Invalid input, choose again")
                       continue
-    
 if __name__ == "__main__":
     main_menu()
+
 
 
     
