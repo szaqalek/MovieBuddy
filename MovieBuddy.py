@@ -8,7 +8,6 @@ import random
 import env
 
 api = env.API_KEY
-
 def main_menu():
     print(Figlet().renderText("MovieBuddy")) #logo at start
     print("\nHow can I help you? ")
@@ -55,12 +54,16 @@ def search_movie():
         while True:
              choice = input("\nEnter 1 to search again, 2 to return to main menu, or 0 to exit\n")
              
+             
              if choice == '0':
                 sys.exit()
              elif choice == "1":
                 search_movie()
              elif choice == '2':
                 main_menu()
+             
+            
+        
              else:
                  print("Invalid input, choose again")
                  
@@ -123,14 +126,14 @@ def find_a_movie():
              #another request has to be made using ID gathered in first request
              response = requests.get(f"https://api.simkl.com/search/random?type=movie&genre={movie_types[movietype]}&rank_limit=500&client_id={api}").json()
              movie_id = response["simkl_id"]   
-             secondresponse = requests.get(f"https://api.simkl.com/movies/{movie_id}?extended=full&client_id={api}").json()
-             title = secondresponse["title"]
-             year = secondresponse["year"]
-             IMDBrating = secondresponse["ratings"]["imdb"]["rating"] if "ratings" in secondresponse and secondresponse["ratings"]["imdb"]["rating"] is not None else "N/A"
-             overview = secondresponse["overview"] if "overview" in secondresponse is not None else "N/A"
-             director = secondresponse["director"] if "director" in secondresponse is not None else "N/A"
-             country = secondresponse["country"] if "country" in secondresponse is not None else "N/A"
-             genres = secondresponse["genres"] if "genres" in secondresponse is not None else "N/A"  
+             moviedetailsresponse = requests.get(f"https://api.simkl.com/movies/{movie_id}?extended=full&client_id={api}").json()
+             title = moviedetailsresponse["title"]
+             year = moviedetailsresponse["year"]
+             IMDBrating = moviedetailsresponse["ratings"]["imdb"]["rating"] if "ratings" in moviedetailsresponse and moviedetailsresponse["ratings"]["imdb"]["rating"] is not None else "N/A"
+             overview = moviedetailsresponse["overview"] if "overview" in moviedetailsresponse is not None else "N/A"
+             director = moviedetailsresponse["director"] if "director" in moviedetailsresponse is not None else "N/A"
+             country = moviedetailsresponse["country"] if "country" in moviedetailsresponse is not None else "N/A"
+             genres = moviedetailsresponse["genres"] if "genres" in moviedetailsresponse is not None else "N/A"  
              
              print(f"\nTitle: {title}")
              print(f"Director: {director}")
@@ -140,8 +143,14 @@ def find_a_movie():
              print(f"Overview: {overview}")
              print("Genres:", ", ".join(genres)) #as the genres from APi is in list form, to have it in pretty format, join function is used
      
+             
+             
              while True: 
                   choice = input("\nEnter 1 to search again, 2 to return to choose another genre, 3 to return to main menu or 0 to exit\n")
+             
+                
+             
+                
                   if choice == '0':
                      sys.exit()
                   elif choice == "1":
@@ -154,9 +163,10 @@ def find_a_movie():
                   else:
                       print("Invalid input, choose again")
                       continue
+    
 if __name__ == "__main__":
     main_menu()
 
 
-
     
+
