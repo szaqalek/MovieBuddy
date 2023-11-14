@@ -36,72 +36,57 @@ def main_menu():
          else:
              print("Invalid input, choose again")
     
-def search_movie():
+def search_movie(): #main function for the search tool - calls on get_movie_data function which grabs the data from API,  which appends the data to table, and displa_movie_results which prints the data
+    moviename = input("Enter movie name:\n")
     
-        moviename = input("Enter movie name:\n")
-        try:
-            response = requests.get(f"https://api.simkl.com/search/movie?q={moviename}&page=1&limit=20&extended=overview,theater,metadata,tmdb,genres&client_id={api}").json()
-        except ConnectionError:
-            print("Please check your connection to the server. You will be returned to main menu")
-            main_menu()
-        outcome = [] #Empty list to put filtered and parsed results in json format
+    response = get_movie_data(moviename)
     
-        for movie in response: 
+    outcome = parse_movie_data(response)
+
+    if outcome is not None:
+        display_movie_results(outcome)
+
+        while True:
+            choice = input("\nEnter 1 to search again, 2 to return to the main menu, or 0 to exit\n")
+
+            if choice == '0':
+                sys.exit()
+            elif choice == "1":
+                search_movie()
+            elif choice == '2':
+                main_menu()
+            else:
+                print("Invalid input, choose again")
+
+    
+def get_movie_data(moviename):
+    try:
+        response = requests.get(f"https://api.simkl.com/search/movie?q={moviename}&page=1&limit=20&extended=overview,theater,metadata,tmdb,genres&client_id={api}").json()
+        return response
+    except ConnectionError:
+        print("Please check your connection to the server. You will be returned to the main menu.")
+        main_menu()
+
+def parse_movie_data(response):
+    
+    outcome = [] #Empty list to put filtered and parsed results in json format
+    
+    for movie in response: 
            title = movie["title"] 
            year = movie["year"] if "year" in movie is not None else "N/A"
            votes = movie["ratings"]["imdb"]["votes"] if "ratings" in movie and "imdb" in movie["ratings"] and movie["ratings"]["imdb"]["votes"] is not None else "N/A"
            IMDBrating = movie["ratings"]["imdb"]["rating"] if "ratings" in movie and "imdb" in movie["ratings"] and movie["ratings"]["imdb"]["rating"] is not None else "N/A"
            outcome.append([title, year, IMDBrating, votes]) #checking if the corresponding values does exist and are not empty, and appending them to table
-        if not outcome: #if the table is empty
-             print("No movies found.")
-        else:     
-             print(tabulate(outcome, headers=["Title", "Year", "IMDB rating", "Votes"]))  
-    
-        while True:
-             choice = input("\nEnter 1 to search again, 2 to return to main menu, or 0 to exit\n")
-             
-             
-             if choice == '0':
-                sys.exit()
-             elif choice == "1":
-                search_movie()
-             elif choice == '2':
-                main_menu()
-             
-            
-        
-             else:
-                 print("Invalid input, choose again")
-                 
-def popular_releases():
-    
-        try:
-            response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
-        except ConnectionError:
-            print("Please check your connection to the server. You will be returned to main menu")
-            main_menu()
-        outcome = [] #Empty list to put filtered and parsed results in json format
-        place = 0 #a way to number the list, as the values in API doesn't contain it - every next movie has following number, capping at 10
-        for movie in response:
-           if place == 50:
-               break
-           place += 1
-           title = movie["title"]
-           release = movie["release_date"]
-           IMDBrating = movie["ratings"]["imdb"]["rating"] if "ratings" in movie and "imdb" in movie["ratings"] and movie["ratings"]["imdb"]["rating"] is not None else "N/A"
-           outcome.append([place, title, release]) #checking if the corresponding values does exist and are not empty, and appending them to table
-        print(tabulate(outcome, headers=["Place", "Title","Relase date",])) 
-           
-        while True:
-              choice = input("\nEnter 1 to return to main menu, or 0 to exit3\n")
-         
-              if choice == '0':
-                sys.exit()
-              elif choice == '1':
-                main_menu()
-              else:
-                  print("Invalid input, choose again")
-    
+    return outcome #    
+
+def display_movie_results(outcome): 
+    if not outcome:
+        print("No movies found.")
+    else:
+        headers = ["Title", "Year", "IMDB rating", "Votes"]
+        print(tabulate(outcome, headers=headers))
+
+
 def find_a_movie():
 
     movie_types = { #a dictionary containg supported movie genres
@@ -179,10 +164,39 @@ def find_a_movie():
                   else:
                       print("Invalid input, choose again")
                       continue
+def popular_releases():
+    
+        try:
+            response = requests.get("https://data.simkl.in/calendar/movie_release.json").json()
+        except ConnectionError:
+            print("Please check your connection to the server. You will be returned to main menu")
+            main_menu()
+        outcome = [] #Empty list to put filtered and parsed results in json format
+        place = 0 #a way to number the list, as the values in API doesn't contain it - every next movie has following number, capping at 10
+        for movie in response:
+           if place == 50:
+               break
+           place += 1
+           title = movie["title"]
+           release = movie["release_date"]
+           IMDBrating = movie["ratings"]["imdb"]["rating"] if "ratings" in movie and "imdb" in movie["ratings"] and movie["ratings"]["imdb"]["rating"] is not None else "N/A"
+           outcome.append([place, title, release]) #checking if the corresponding values does exist and are not empty, and appending them to table
+        print(tabulate(outcome, headers=["Place", "Title","Relase date",])) 
+           
+        while True:
+              choice = input("\nEnter 1 to return to main menu, or 0 to exit3\n")
+         
+              if choice == '0':
+                sys.exit()
+              elif choice == '1':
+                main_menu()
+              else:
+                  print("Invalid input, choose again")
+    
+
     
 if __name__ == "__main__":
     main()
 
 
     
-
